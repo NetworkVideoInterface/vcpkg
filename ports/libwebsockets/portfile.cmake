@@ -150,6 +150,7 @@ vcpkg_cmake_configure(
         -DLWS_WITH_HTTP2=ON
         -DLWS_WITH_HTTP_STREAM_COMPRESSION=ON # Since zlib is already a dependency
         -DLWS_WITH_EXTERNAL_POLL=ON
+        -DLWS_LOGS_TIMESTAMP=OFF
     # OPTIONS_RELEASE -DOPTIMIZE=1
     # OPTIONS_DEBUG -DDEBUGGABLE=1
 )
