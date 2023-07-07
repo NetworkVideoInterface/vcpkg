@@ -1,0 +1,64 @@
+From b625b2c6c63ffe16d85109c68a404b46f8e32b72 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=AB=98=E6=B1=9F=E6=9D=B0?= <gaojiangjie@sobey.com>
+Date: Fri, 7 Jul 2023 15:14:30 +0800
+Subject: [PATCH] boringssl
+
+---
+ lib/plat/windows/private-lib-plat-windows.h | 4 ----
+ lib/plat/windows/windows-sockets.c          | 4 ++++
+ lib/tls/CMakeLists.txt                      | 4 +---
+ 3 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/lib/plat/windows/private-lib-plat-windows.h b/lib/plat/windows/private-lib-plat-windows.h
+index 18d87ac2..4d9e080d 100644
+--- a/lib/plat/windows/private-lib-plat-windows.h
++++ b/lib/plat/windows/private-lib-plat-windows.h
+@@ -68,10 +68,6 @@
+ #include <afunix.h>
+ #endif
+ 
+-#if defined(LWS_WITH_TLS)
+-#include <wincrypt.h>
+-#endif
+-
+ #if defined(LWS_HAVE_PTHREAD_H)
+ #define lws_mutex_t		pthread_mutex_t
+ #define lws_mutex_init(x)	pthread_mutex_init(&(x), NULL)
+diff --git a/lib/plat/windows/windows-sockets.c b/lib/plat/windows/windows-sockets.c
+index b0e15dd1..e789bfd3 100644
+--- a/lib/plat/windows/windows-sockets.c
++++ b/lib/plat/windows/windows-sockets.c
+@@ -34,6 +34,10 @@
+ #else
+ #include "mbedtls/net.h"
+ #endif
++#else
++#if defined(LWS_WITH_TLS) && defined(LWS_SSL_CLIENT_USE_OS_CA_CERTS)
++#include <wincrypt.h>
++#endif
+ #endif
+ 
+ int
+diff --git a/lib/tls/CMakeLists.txt b/lib/tls/CMakeLists.txt
+index fb9a75fe..868bc6a9 100644
+--- a/lib/tls/CMakeLists.txt
++++ b/lib/tls/CMakeLists.txt
+@@ -260,14 +260,12 @@ if (LWS_WITH_SSL)
+ 		if (OPENSSL_FOUND AND "${OPENSSL_INCLUDE_DIRS}" STREQUAL "")
+ 			set(OPENSSL_INCLUDE_DIRS "${OPENSSL_INCLUDE_DIR}")
+ 		endif()
+-
+-		if (NOT OPENSSL_FOUND AND NOT LWS_WITH_BORINGSSL)
++		if (NOT OPENSSL_FOUND)
+ 			# TODO: Add support for STATIC also.
+ 			if (NOT LWS_PLAT_FREERTOS)
+ 				find_package(PkgConfig QUIET)
+ 				pkg_check_modules(PC_OPENSSL openssl QUIET)
+ 				find_package(OpenSSL REQUIRED)
+-				list(APPEND OPENSSL_LIBRARIES ${PC_OPENSSL_LIBRARIES})
+ 				set(OPENSSL_LIBRARIES ${OPENSSL_LIBRARIES} PARENT_SCOPE)
+ 			endif()
+ 			set(OPENSSL_INCLUDE_DIRS "${OPENSSL_INCLUDE_DIR}")
+-- 
+2.27.0.windows.1
+

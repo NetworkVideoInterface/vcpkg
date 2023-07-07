@@ -8,7 +8,7 @@ vcpkg_from_github(
         fix-dependency-libuv.patch
         fix-build-error.patch
         export-include-path.patch
-        fix-find-openssl.patch
+        fix-boringssl.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" LWS_WITH_STATIC)
@@ -136,13 +136,19 @@ if(NOT VCPKG_TARGET_ARCHITECTURE STREQUAL "wasm32")
     set(EXTRA_ARGS "-DLWS_WITH_LIBUV=ON")
 endif()
 
+vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
+    FEATURES
+        boringssl LWS_WITH_BORINGSSL
+        openssl LWS_WITH_GENCRYPTO
+)
+
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
+        ${FEATURE_OPTIONS}
         ${EXTRA_ARGS}
         -DLWS_WITH_STATIC=${LWS_WITH_STATIC}
         -DLWS_WITH_SHARED=${LWS_WITH_SHARED}
-        -DLWS_WITH_GENCRYPTO=ON
         -DLWS_WITH_TLS=ON
         -DLWS_WITH_BUNDLED_ZLIB=OFF
         -DLWS_WITHOUT_TESTAPPS=ON

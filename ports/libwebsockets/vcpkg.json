@@ -9,7 +9,6 @@
       "name": "libuv",
       "platform": "!emscripten"
     },
-    "openssl",
     "pthreads",
     {
       "name": "vcpkg-cmake",
@@ -20,5 +19,25 @@
       "host": true
     },
     "zlib"
-  ]
+  ],
+  "features": {
+    "boringssl":{
+      "description": "Use for boringssl",
+      "dependencies": [
+        {
+          "name": "boringssl",
+          "default-features": true
+        }
+      ]
+    },
+    "openssl":{
+      "description": "Use for openssl",
+      "dependencies": [
+        {
+          "name": "openssl",
+          "default-features": false
+        }
+      ]
+    }
+  }
 }
