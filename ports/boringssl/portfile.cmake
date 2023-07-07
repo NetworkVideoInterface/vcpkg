@@ -27,6 +27,7 @@ vcpkg_from_github(
   HEAD_REF chromium-stable
   PATCHES
     0001-vcpkg.patch
+    0002-remove-WX-Werror.patch
 )
 
 vcpkg_cmake_configure(
