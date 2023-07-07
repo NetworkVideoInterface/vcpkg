@@ -1,25 +1,39 @@
+From 95fe731154ca262d5563cbc5f561daeed7f29e03 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=AB=98=E6=B1=9F=E6=9D=B0?= <gaojiangjie@sobey.com>
+Date: Thu, 6 Jul 2023 18:20:19 +0800
+Subject: [PATCH] vcpkg
+
+---
+ CMakeLists.txt      | 14 ++++++++++++--
+ tool/CMakeLists.txt |  2 +-
+ 2 files changed, 13 insertions(+), 3 deletions(-)
+
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 893bca7..83ff477 100644
+index 31d29317d..b469d2bd1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -562,7 +562,7 @@ endif()
+@@ -481,7 +481,7 @@ endif()
  
  # Add minimal googletest targets. The provided one has many side-effects, and
  # googletest has a very straightforward build.
 -add_library(boringssl_gtest third_party/googletest/src/gtest-all.cc)
 +add_library(boringssl_gtest STATIC third_party/googletest/src/gtest-all.cc)
- target_include_directories(boringssl_gtest PRIVATE third_party/googletest)
- 
- include_directories(third_party/googletest/include)
-@@ -649,3 +649,18 @@ add_custom_target(
-     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+ target_include_directories(
+     boringssl_gtest
+     PUBLIC third_party/googletest/include
+@@ -580,7 +580,7 @@ add_custom_target(
      DEPENDS all_tests bssl_shim handshaker fips_specific_tests_if_any
      USES_TERMINAL)
-+
-+install(TARGETS crypto ssl
-+  RUNTIME DESTINATION bin
-+  LIBRARY DESTINATION lib
-+  ARCHIVE DESTINATION lib)
+ 
+-install_if_enabled(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++#install_if_enabled(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+ 
+ install_if_enabled(EXPORT OpenSSLTargets
+   FILE OpenSSLTargets.cmake
+@@ -588,3 +588,13 @@ install_if_enabled(EXPORT OpenSSLTargets
+   DESTINATION lib/cmake/OpenSSL
+ )
+ install_if_enabled(FILES cmake/OpenSSLConfig.cmake DESTINATION lib/cmake/OpenSSL)
 +
 +option(INSTALL_HEADERS "Install headers" ON)
 +if(INSTALL_HEADERS)
@@ -30,3 +44,17 @@ index 893bca7..83ff477 100644
 +if(INSTALL_TOOLS)
 +  install(TARGETS bssl DESTINATION tools/boringssl)
 +endif()
+diff --git a/tool/CMakeLists.txt b/tool/CMakeLists.txt
+index 504710889..5dd66b7d1 100644
+--- a/tool/CMakeLists.txt
++++ b/tool/CMakeLists.txt
+@@ -19,5 +19,5 @@ add_executable(
+   tool.cc
+   transport_common.cc
+ )
+-install_if_enabled(TARGETS bssl DESTINATION ${INSTALL_DESTINATION_DEFAULT})
++#install_if_enabled(TARGETS bssl DESTINATION ${INSTALL_DESTINATION_DEFAULT})
+ target_link_libraries(bssl ssl crypto)
+-- 
+2.27.0.windows.1
+

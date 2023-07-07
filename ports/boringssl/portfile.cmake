@@ -22,12 +22,11 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
 vcpkg_from_github(
   OUT_SOURCE_PATH SOURCE_PATH
   REPO google/boringssl
-  REF 479adf98d54a21c1d154aac59b2ce120e1d1a6d6
-  SHA512 74b5d001c0f5c1846b8818e9e668fa35de5171fc21a8f713d241f57b3e8abe42426fdc66b085cca1853b904def6f4bea573dfed40b8b1422894cca85b0b1a44a
-  HEAD_REF master
+  REF ca1690e221677cea3fb946f324eb89d846ec53f2
+  SHA512 1c12f6177d7e0902274e78f3686a18611c826a831cad80c7db970986756796eae5bff8c8684ce988ea573c970e9ef9decfedc6e3fc2ef6564772c2b7d0009514
+  HEAD_REF chromium-stable
   PATCHES
     0001-vcpkg.patch
-    0002-remove-WX-Werror.patch
 )
 
 vcpkg_cmake_configure(
@@ -43,6 +42,7 @@ vcpkg_cmake_configure(
 
 vcpkg_cmake_install()
 vcpkg_copy_pdbs()
+vcpkg_cmake_config_fixup(CONFIG_PATH lib/cmake/OpenSSL)
 
 include("${CMAKE_CURRENT_LIST_DIR}/install-pc-files.cmake")
 
