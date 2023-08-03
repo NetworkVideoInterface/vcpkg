@@ -1,0 +1,54 @@
+From a6a86e343a1a7022456d8d80bcc40accf217fdd9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=AB=98=E6=B1=9F=E6=9D=B0?= <gaojiangjie@sobey.com>
+Date: Wed, 2 Aug 2023 19:39:21 +0800
+Subject: [PATCH] destory state
+
+---
+ include/libwebsockets/lws-context-vhost.h | 13 +++++++++++++
+ lib/core/context.c                        |  6 ++++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/include/libwebsockets/lws-context-vhost.h b/include/libwebsockets/lws-context-vhost.h
+index b3de140b..43d84369 100644
+--- a/include/libwebsockets/lws-context-vhost.h
++++ b/include/libwebsockets/lws-context-vhost.h
+@@ -973,6 +973,19 @@ lws_create_context(const struct lws_context_creation_info *info);
+ LWS_VISIBLE LWS_EXTERN void
+ lws_context_destroy(struct lws_context *context);
+ 
++/**
++ * lws_context_state() - State of websocket context
++ * \param context:	Websocket context
++ *
++ *	return 0, running.
++ *	return 1, destroy from inside service.
++ *	return 2, libuv ends up here later.
++ *	return 3, the final destruction of context.
++ *
++ */
++LWS_VISIBLE LWS_EXTERN int
++lws_context_state(struct lws_context *context);
++
+ typedef int (*lws_reload_func)(void);
+ 
+ /**
+diff --git a/lib/core/context.c b/lib/core/context.c
+index af818ebe..64b09c2e 100644
+--- a/lib/core/context.c
++++ b/lib/core/context.c
+@@ -2231,6 +2231,12 @@ bail:
+ 	lws_context_unlock(context);
+ }
+ 
++int
++lws_context_state(struct lws_context *context)
++{
++	return context->destroy_state;
++}
++
+ int
+ lws_context_is_being_destroyed(struct lws_context *context)
+ {
+-- 
+2.27.0.windows.1
+

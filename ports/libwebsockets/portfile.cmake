@@ -9,6 +9,7 @@ vcpkg_from_github(
         fix-build-error.patch
         export-include-path.patch
         fix-boringssl.patch
+        destory-state.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" LWS_WITH_STATIC)
@@ -157,6 +158,7 @@ vcpkg_cmake_configure(
         -DLWS_WITH_HTTP_STREAM_COMPRESSION=ON # Since zlib is already a dependency
         -DLWS_WITH_EXTERNAL_POLL=ON
         -DLWS_LOGS_TIMESTAMP=OFF
+        -DLWS_SSL_CLIENT_USE_OS_CA_CERTS=OFF
     # OPTIONS_RELEASE -DOPTIMIZE=1
     # OPTIONS_DEBUG -DDEBUGGABLE=1
 )
