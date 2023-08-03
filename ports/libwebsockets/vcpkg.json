@@ -20,24 +20,15 @@
     },
     "zlib"
   ],
+  "default-features":["boringssl"],
   "features": {
     "boringssl":{
       "description": "Use for boringssl",
-      "dependencies": [
-        {
-          "name": "boringssl",
-          "default-features": true
-        }
-      ]
+      "dependencies": ["boringssl"]
     },
     "openssl":{
       "description": "Use for openssl",
-      "dependencies": [
-        {
-          "name": "openssl",
-          "default-features": false
-        }
-      ]
+      "dependencies": ["openssl"]
     }
   }
 }
