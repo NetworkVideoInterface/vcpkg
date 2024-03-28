@@ -1,0 +1,51 @@
+From 676fa764571fc23f28afe52ddde523083b85fd76 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=AB=98=E6=B1=9F=E6=9D=B0?= <gaojiangjie@sobey.com>
+Date: Thu, 28 Mar 2024 15:08:05 +0800
+Subject: [PATCH 5/5] fix conversion error
+
+---
+ lib/tls/openssl/openssl-session.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/lib/tls/openssl/openssl-session.c b/lib/tls/openssl/openssl-session.c
+index e27a8f38..f8c35de4 100644
+--- a/lib/tls/openssl/openssl-session.c
++++ b/lib/tls/openssl/openssl-session.c
+@@ -35,6 +35,7 @@ typedef struct lws_tls_session_cache_openssl {
+ 
+ #define tlssess_loglevel		LLL_INFO
+ #if (_LWS_ENABLED_LOGS & tlssess_loglevel)
++#include <inttypes.h>
+ #define lwsl_tlssess(...)		_lws_log(tlssess_loglevel, __VA_ARGS__)
+ #else
+ #define lwsl_tlssess(...)
+@@ -215,7 +216,7 @@ lws_tls_session_new_cb(SSL *ssl, SSL_SESSION *sess)
+ 	char tag[LWS_SESSION_TAG_LEN];
+ 	struct lws_vhost *vh;
+ 	lws_tls_sco_t *ts;
+-	long ttl;
++	lws_usec_t ttl;
+ #if (_LWS_ENABLED_LOGS & tlssess_loglevel)
+ 	const char *disposition = "reuse";
+ #endif
+@@ -235,7 +236,7 @@ lws_tls_session_new_cb(SSL *ssl, SSL_SESSION *sess)
+ 
+ 	/* api return is long, although we only support setting
+ 	 * default (300s) or max uint32_t */
+-	ttl = SSL_SESSION_get_timeout(sess);
++	ttl = (lws_usec_t)SSL_SESSION_get_timeout(sess);
+ 
+ 	lws_context_lock(vh->context, __func__); /* -------------- cx { */
+ 	lws_vhost_lock(vh); /* -------------- vh { */
+@@ -279,7 +280,7 @@ lws_tls_session_new_cb(SSL *ssl, SSL_SESSION *sess)
+ 	lws_vhost_unlock(vh); /* } vh --------------  */
+ 	lws_context_unlock(vh->context); /* } cx --------------  */
+ 
+-	lwsl_tlssess("%s: %p: %s: %s %s, ttl %lds (%s:%u)\n", __func__,
++	lwsl_tlssess("%s: %p: %s: %s %s, ttl %"PRId64"s (%s:%u)\n", __func__,
+ 		     sess, wsi->lc.gutag, disposition, tag, ttl, vh->name,
+ 		     vh->tls_sessions.count);
+ 
+-- 
+2.27.0.windows.1
+

@@ -1,0 +1,103 @@
+From 1953bc96224dc9b4dac74723b3c21436e9312998 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=AB=98=E6=B1=9F=E6=9D=B0?= <gaojiangjie@sobey.com>
+Date: Fri, 13 Oct 2023 18:28:02 +0800
+Subject: [PATCH 4/5] fix set TCP_NODELAY on base of FreeBSD
+
+---
+ lib/plat/unix/unix-sockets.c | 45 ++++++++----------------------------
+ 1 file changed, 9 insertions(+), 36 deletions(-)
+
+diff --git a/lib/plat/unix/unix-sockets.c b/lib/plat/unix/unix-sockets.c
+index cb2f1bba..d9c0d6f2 100644
+--- a/lib/plat/unix/unix-sockets.c
++++ b/lib/plat/unix/unix-sockets.c
+@@ -47,6 +47,7 @@
+ #endif
+ 
+ #include <netinet/ip.h>
++#include <netinet/in.h>
+ 
+ int
+ lws_send_pipe_choked(struct lws *wsi)
+@@ -104,14 +105,6 @@ lws_plat_set_socket_options(struct lws_vhost *vhost, int fd, int unix_skt)
+ 	int optval = 1;
+ 	socklen_t optlen = sizeof(optval);
+ 
+-#if defined(__APPLE__) || \
+-    defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || \
+-    defined(__NetBSD__) || \
+-    defined(__OpenBSD__) || \
+-    defined(__HAIKU__)
+-	struct protoent *tcp_proto;
+-#endif
+-
+ 	(void)fcntl(fd, F_SETFD, FD_CLOEXEC);
+ 
+ 	if (!unix_skt && vhost->ka_time) {
+@@ -121,25 +114,16 @@ lws_plat_set_socket_options(struct lws_vhost *vhost, int fd, int unix_skt)
+ 			       (const void *)&optval, optlen) < 0)
+ 			return 1;
+ 
+-#if defined(__APPLE__) || \
+-    defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || \
+-    defined(__NetBSD__) || \
+-    defined(__CYGWIN__) || defined(__OpenBSD__) || defined (__sun) || \
+-    defined(__HAIKU__)
+-
+-		/*
+-		 * didn't find a way to set these per-socket, need to
+-		 * tune kernel systemwide values
+-		 */
+-#else
+-		/* set the keepalive conditions we want on it too */
+-
+ #if defined(LWS_HAVE_TCP_USER_TIMEOUT)
+ 		optval = 1000 * (vhost->ka_time +
+ 				 (vhost->ka_interval * vhost->ka_probes));
+ 		if (setsockopt(fd, IPPROTO_TCP, TCP_USER_TIMEOUT,
+ 			       (const void *)&optval, optlen) < 0)
+ 			return 1;
++#endif
++
++#if !defined(TCP_KEEPIDLE)
++#define TCP_KEEPIDLE TCP_KEEPALIVE
+ #endif
+ 		optval = vhost->ka_time;
+ 		if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE,
+@@ -155,7 +139,6 @@ lws_plat_set_socket_options(struct lws_vhost *vhost, int fd, int unix_skt)
+ 		if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT,
+ 			       (const void *)&optval, optlen) < 0)
+ 			return 1;
+-#endif
+ 	}
+ 
+ #if defined(SO_BINDTODEVICE)
+@@ -171,21 +154,11 @@ lws_plat_set_socket_options(struct lws_vhost *vhost, int fd, int unix_skt)
+ 
+ 	/* Disable Nagle */
+ 	optval = 1;
+-#if defined (__sun) || defined(__QNX__)
+-	if (!unix_skt && setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (const void *)&optval, optlen) < 0)
+-		return 1;
+-#elif !defined(__APPLE__) && \
+-      !defined(__FreeBSD__) && !defined(__FreeBSD_kernel__) &&        \
+-      !defined(__NetBSD__) && \
+-      !defined(__OpenBSD__) && \
+-      !defined(__HAIKU__)
+-	if (!unix_skt && setsockopt(fd, SOL_TCP, TCP_NODELAY, (const void *)&optval, optlen) < 0)
+-		return 1;
+-#else
+-	tcp_proto = getprotobyname("TCP");
+-	if (!unix_skt && setsockopt(fd, tcp_proto->p_proto, TCP_NODELAY, &optval, optlen) < 0)
+-		return 1;
++#if !defined(SOL_TCP)
++#define SOL_TCP IPPROTO_TCP
+ #endif
++	if (!unix_skt && setsockopt(fd, SOL_TCP, TCP_NODELAY, &optval, optlen) < 0)
++		return 1;
+ 
+ 	return lws_plat_set_nonblocking(fd);
+ }
+-- 
+2.27.0.windows.1
+

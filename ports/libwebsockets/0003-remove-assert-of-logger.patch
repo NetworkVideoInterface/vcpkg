@@ -1,0 +1,28 @@
+From 9e5e0892303318af8ad1e8a21bf18e12cae3dd62 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=AB=98=E6=B1=9F=E6=9D=B0?= <gaojiangjie@sobey.com>
+Date: Fri, 13 Oct 2023 18:24:47 +0800
+Subject: [PATCH 3/5] remove assert of logger
+
+---
+ lib/core/logs.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/lib/core/logs.c b/lib/core/logs.c
+index 27b7b9fa..3f19dc9c 100644
+--- a/lib/core/logs.c
++++ b/lib/core/logs.c
+@@ -536,10 +536,8 @@ lwsl_refcount_cx(lws_log_cx_t *cx, int _new)
+ 
+ 	if (_new > 0)
+ 		cx->refcount++;
+-	else {
+-		assert(cx->refcount);
++	else
+ 		cx->refcount--;
+-	}
+ 
+ 	if (cx->refcount_cb)
+ 		cx->refcount_cb(cx, _new);
+-- 
+2.27.0.windows.1
+

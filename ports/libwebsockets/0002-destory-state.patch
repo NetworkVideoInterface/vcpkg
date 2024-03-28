@@ -1,7 +1,7 @@
-From a6a86e343a1a7022456d8d80bcc40accf217fdd9 Mon Sep 17 00:00:00 2001
+From 3bba1e8b744a42a8f4f9138e85576a8f1d8d0c1e Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=E9=AB=98=E6=B1=9F=E6=9D=B0?= <gaojiangjie@sobey.com>
 Date: Wed, 2 Aug 2023 19:39:21 +0800
-Subject: [PATCH] destory state
+Subject: [PATCH 2/5] destory state
 
 ---
  include/libwebsockets/lws-context-vhost.h | 13 +++++++++++++
@@ -9,10 +9,10 @@ Subject: [PATCH] destory state
  2 files changed, 19 insertions(+)
 
 diff --git a/include/libwebsockets/lws-context-vhost.h b/include/libwebsockets/lws-context-vhost.h
-index b3de140b..43d84369 100644
+index c1406840..8973e2ef 100644
 --- a/include/libwebsockets/lws-context-vhost.h
 +++ b/include/libwebsockets/lws-context-vhost.h
-@@ -973,6 +973,19 @@ lws_create_context(const struct lws_context_creation_info *info);
+@@ -978,6 +978,19 @@ lws_create_context(const struct lws_context_creation_info *info);
  LWS_VISIBLE LWS_EXTERN void
  lws_context_destroy(struct lws_context *context);
  
@@ -33,10 +33,10 @@ index b3de140b..43d84369 100644
  
  /**
 diff --git a/lib/core/context.c b/lib/core/context.c
-index af818ebe..64b09c2e 100644
+index cdbcec88..625c4b13 100644
 --- a/lib/core/context.c
 +++ b/lib/core/context.c
-@@ -2231,6 +2231,12 @@ bail:
+@@ -2245,6 +2245,12 @@ bail:
  	lws_context_unlock(context);
  }
  

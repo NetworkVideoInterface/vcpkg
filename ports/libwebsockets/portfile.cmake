@@ -1,15 +1,18 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO warmcat/libwebsockets
-    REF b0a749c8e7a8294b68581ce4feac0e55045eb00b # v4.3.2
-    SHA512 48c1d59cfdbe6cc043a51e950a614273bd2f9bbfd0ab8436e4ba30bf119cfdbc3e691c02608e8c169356ec79ca96472340d98d17659b66ee60bb998f3695d3c4
+    REF bd8f69e43835f3d57656f25efa84816991e21c10 # v4.3-stable
+    SHA512 2bf8d9577800f1d8a070086f0ff562577251fc3d3237260b9dcf7b98ecd0c322e92ec68997419c9a29f773e8e051c931008d07bde4c405471fb281abc79236dc
     HEAD_REF master
     PATCHES
         fix-dependency-libuv.patch
         fix-build-error.patch
         export-include-path.patch
-        fix-boringssl.patch
-        destory-state.patch
+        0001-vcpkg-boringssl.patch
+        0002-destory-state.patch
+        0003-remove-assert-of-logger.patch
+        0004-fix-set-TCP_NODELAY-on-base-of-FreeBSD.patch
+        0005-fix-conversion-error.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" LWS_WITH_STATIC)
