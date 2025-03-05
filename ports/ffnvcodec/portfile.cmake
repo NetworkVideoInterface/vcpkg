@@ -4,6 +4,8 @@ vcpkg_from_github(
     REF b641a195edbe3ac9788e681e22c2e2fad8aacddb # 11.1.5.0
     SHA512 e8b4c21ddc9c39dadd9b69ebdfcf38cf1e61f19ffb88d0a4d9086ddbf69285d2c8c946bb02bde3ee943accae559a72468f096718ad69ac03a43746c1eb0ed483
     HEAD_REF master
+    PATCHES
+        0001-Add-host-memory-interface.patch
 )
 
 # ====================================================
